@@ -1,5 +1,5 @@
 import pygame
-from pelota import Pelota
+
 
 COLOR_PALETA = (0, 255, 0)
 ANCHO_PALETA = 30
@@ -39,14 +39,12 @@ class Paleta:
         """Dibuja la paleta como un rectangulo"""
         pygame.draw.rect(surface, COLOR_PALETA, self.rect)
     
-    def golpear_pelota(self, bola):
-        if self.rect.colliderect(bola.rect):
-            bola.dir_x *= -1
-            bola.dir_y *= 1
+    # def golpear_pelota(self, bola):
+    #     if self.rect.colliderect(bola.rect):
+    #         bola.dir_x *= -1
+    #         bola.dir_y *= -1
 
-
-
-            # Asi rebota segun en que parte de la paleta pegue
+    #   Asi podria rebotar segun en que parte de la paleta pegue
 
             # # Rebote vertical según punto de impacto
             # centro_paleta = self.rect.centery
@@ -55,7 +53,6 @@ class Paleta:
 
             # # Normalizamos la diferencia para ajustar el ángulo
             # bola.dir_y = diferencia // 10
-
 
     # Se ejecuta en cada frame
     def update(self):

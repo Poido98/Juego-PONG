@@ -2,6 +2,7 @@ import pygame
 import sys
 from pelota import Pelota
 from paleta import Paleta
+from red import dibujar_red_punteada
 
 ANCHO = 900
 ALTO = 650
@@ -25,7 +26,9 @@ bola = Pelota(
     image_path = "assets/images/pelota_roja_2.png",
     x_inicial = ANCHO / 2,
     y_inicial = ALTO / 2,
-    velocidad = VEL_PELOTA
+    velocidad = VEL_PELOTA,
+    ancho_pantalla = ANCHO,
+    alto_pantalla = ALTO
 )
 
 # Creamos las paletas
@@ -55,22 +58,21 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        
-        # if event.type == pygame.KEYDOWN:
-        #     if event.key == pygame.K_UP:
-        #         pass
 
     pantalla.fill(COLOR_NEGRO)
 
     # Logica del juego
+    dibujar_red_punteada(pantalla, ANCHO, ALTO)
     paleta_izquierda.update()
     paleta_derecha.update()
     bola.update()
     bola.dibujar(pantalla) # Pelota
     paleta_izquierda.dibujar(pantalla) # Paleta izquierda
     paleta_derecha.dibujar(pantalla) # Paleta derecha
-    paleta_izquierda.golpear_pelota(bola)
-    paleta_derecha.golpear_pelota(bola)
+    bola.rebotar_en_paleta(paleta_izquierda)
+    bola.rebotar_en_paleta(paleta_derecha)
+    # paleta_izquierda.golpear_pelota(bola)
+    # paleta_derecha.golpear_pelota(bola)
 
     texto_puntaje = fuente_puntaje.render(f"{puntaje_izquierda} : {puntaje_derecha}", True, (COLOR_PUNTAJE))
     pantalla.blit(texto_puntaje, (ANCHO / 2 - texto_puntaje.get_width() // 2, 20))
