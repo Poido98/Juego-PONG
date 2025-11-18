@@ -109,6 +109,9 @@ class Pelota:
             self.x = self.rect.x
             self.y = self.rect.y
 
+            return True
+        return False
+
     def fuera_de_pantalla(self):
         "Si se fue afuera de la pantalla"
         if self.rect.right < 0:
