@@ -1,4 +1,5 @@
 class Boton():
+	
 	def __init__(self, image, pos, text_input, font, color_base, color_mouse_arriba):
 		self.image = image
 		self.x_pos = pos[0]
@@ -17,28 +18,18 @@ class Boton():
 		"""Colocamos la imagen y el texto en la pantalla"""
 		if self.image is not None:
 			pantalla.blit(self.image, self.rect)
-		pantalla.blit(self.text, self.text_rect)
-
-	# def chequear_input(self, posicion):
-	# 	"""Comprobamos si estamos haciendo click en el boton"""
-	# 	if posicion[0] in range(self.rect.left, self.rect.right) and posicion[1] in range(self.rect.top, self.rect.bottom):
-	# 		return True
-	# 	return False
-
-	# def cambiar_color(self, posicion):
-	# 	"""Cambiamos de color si el mouse pasa por arriba del boton"""
-	# 	if posicion[0] in range(self.rect.left, self.rect.right) and posicion[1] in range(self.rect.top, self.rect.bottom):
-	# 		self.text = self.font.render(self.text_input, True, self.color_mouse_arriba)
-	# 	else:
-	# 		self.text = self.font.render(self.text_input, True, self.color_base)
-	
+		pantalla.blit(self.text, self.text_rect)	
 
 	def chequear_input(self, posicion):
+		"""Chequea si hay colision"""
 		return self.rect.collidepoint(posicion)
 
 	def cambiar_color(self, posicion):
-		color_actual = self.color_mouse_arriba if self.rect.collidepoint(posicion) else self.color_base
+		"""Cambia de color si hay colision sino mantiene el color normal"""
+		if self.rect.collidepoint(posicion):
+			color_actual = self.color_mouse_arriba
+		else:
+			color_actual = self.color_base
 		self.text = self.font.render(self.text_input, True, color_actual)
 
 
-	

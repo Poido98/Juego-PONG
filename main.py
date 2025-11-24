@@ -4,29 +4,64 @@ from pelota import Pelota
 from paleta import Paleta
 from red import dibujar_red_punteada
 from botones import Boton
+from constantes import *
+from ingreso_nombres import pedir_nombres
 
-ANCHO = 900
-ALTO = 650
-VEL_PALETAS = 5
-VEL_PELOTA = 3
-COLOR_PUNTAJE = (255, 255, 255) # Blanco
-img_fondo = pygame.image.load("assets\images\menu_sin_titulo.png")
-img_fondo_opciones = pygame.image.load("assets\images\Background.png")
-font_juego = "fonts\juego_font.ttf"
 
 pygame.init()
+pygame.mixer.init()
+
 pantalla = pygame.display.set_mode((ANCHO, ALTO))
+
+
+def juego_terminado(pantalla, fuente, ganador):
+    """La pantalla que aparece una vez que finalizamos el juego"""
+
+    # Limpiamos la pantalla
+    pantalla.fill(COLOR_AZUL_OSCURO)
+
+    # Creamos los distintos textos
+    texto_terminado = fuente.render("JUEGO TERMINADO", True, COLOR_AMARILLO)
+    rect = texto_terminado.get_rect(center=(ANCHO // 2, ALTO // 2 - 100))
+    pantalla.blit(texto_terminado, rect)
+
+    texto_ganador = fuente.render(f"{ganador} ha ganado", True, COLOR_AMARILLO)
+    rect = texto_ganador.get_rect(center=(ANCHO // 2, ALTO // 2 - 40))
+    pantalla.blit(texto_ganador, rect)
+    
+    texto_salir = fuente.render("Presione ESC para salir", True, COLOR_BLANCO)
+    rect = texto_salir.get_rect(center=(ANCHO // 2, ALTO // 2 + 20))
+    pantalla.blit(texto_salir, rect)
+
+    texto_continuar = fuente.render("Presione ESPACIO para volver al menu", True, COLOR_BLANCO)
+    rect = texto_continuar.get_rect(center=(ANCHO // 2, ALTO // 2 + 80))
+    pantalla.blit(texto_continuar, rect)
+
+    pygame.display.flip()
+    
+    # Esperamos que el usuario presione la BARRA o ESC
+    esperando = True
+    while esperando:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                menu_principal()
 
 
 def jugar():
     pygame.display.set_caption("PONG GAME")
     clock = pygame.time.Clock()
-    COLOR_NEGRO = (0, 0, 0)
     fuente_puntaje = pygame.font.SysFont("Arial", 90)
+    fuente_nombres = pygame.font.Font(font_juego, 25)
+
 
     # Creamos la pelota
     bola = Pelota(
-        image_path = "assets/images/pelota_roja_2.png",
         x_inicial = ANCHO / 2,
         y_inicial = ALTO / 2,
         velocidad = VEL_PELOTA,
@@ -55,6 +90,9 @@ def jugar():
         tecla_abajo= pygame.K_s
     )
 
+    # Cargamos los nombres de los jugadores
+    nombre_izquierda, nombre_derecha = pedir_nombres(pantalla, pygame.font.Font(font_juego, 22))
+
     puntaje_derecha = 0
     puntaje_izquierda = 0
 
@@ -74,93 +112,82 @@ def jugar():
         bola.dibujar(pantalla) # Pelota
         paleta_izquierda.dibujar(pantalla) # Paleta izquierda
         paleta_derecha.dibujar(pantalla) # Paleta derecha
+
+        # Aumentamos la velocidad con cada golpe de la paleta
         if bola.rebotar_en_paleta(paleta_izquierda) or bola.rebotar_en_paleta(paleta_derecha):
             bola.velocidad += 0.5
 
-        texto_puntaje = fuente_puntaje.render(f"{puntaje_izquierda}  {puntaje_derecha}", True, (COLOR_PUNTAJE))
-        pantalla.blit(texto_puntaje, (ANCHO / 2 - texto_puntaje.get_width() // 2, 20))
-        
+        # Dibujamos el puntaje
+        texto_puntaje = fuente_puntaje.render(f"{puntaje_izquierda}  {puntaje_derecha}", True, (COLOR_BLANCO))
+        pantalla.blit(texto_puntaje, (ANCHO / 2 - texto_puntaje.get_width() // 2, 23))
 
+        # Dibujamos los nombres
+        texto_jug_izquierda = fuente_nombres.render(nombre_izquierda, True, COLOR_BLANCO)
+        pantalla.blit(texto_jug_izquierda, (ANCHO // 2 - 350, 20))
+        texto_jug_derecha = fuente_nombres.render(nombre_derecha, True, COLOR_BLANCO)
+        pantalla.blit(texto_jug_derecha, (ANCHO // 2 + 200, 20))
+
+        # Si se va fuera de pantalla manejamos el puntaje
         if bola.fuera_de_pantalla():
             if bola.x < 0:
                 puntaje_derecha += 1
             elif bola.x > ANCHO:
                 puntaje_izquierda += 1
             bola.reiniciar()
+            bola.velocidad = VEL_PELOTA
+
+            # Puntaje maximo 
+            if puntaje_derecha >= 1:
+                juego_terminado(pantalla, pygame.font.Font(font_juego, 22), nombre_derecha)
+            elif puntaje_izquierda >= 1:
+                juego_terminado(pantalla, pygame.font.Font(font_juego, 22), nombre_izquierda)
 
         pygame.display.flip()
         clock.tick(60)
             
 
-        
-
-        # PLAY_BACK = Boton(image=None, pos=(640, 460), 
-        #                     text_input="ATRAS", font=pygame.font.Font(font_juego, 75), color_base="White", color_mouse_arriba="Green")
-
-        # PLAY_BACK.cambiar_color(pos_mouse)
-        # PLAY_BACK.update(pantalla)
-
-        # for event in pygame.event.get():
-        #     if event.type == pygame.QUIT:
-        #         pygame.quit()
-        #         sys.exit()
-        #     if event.type == pygame.MOUSEBUTTONDOWN:
-        #         if PLAY_BACK.chequear_input(pos_mouse):
-        #             menu_principal()
-
-        # pygame.display.update()
-
-def ultimas_partidas():
-    while True:
-        pos_mouse = pygame.mouse.get_pos()
-
-        pantalla.fill("white")
-
-        OPTIONS_TEXT = pygame.font.Font(font_juego, 20).render("This is the OPTIONS screen.", True, "Black")
-        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(ANCHO, ALTO - 150))
-        pantalla.blit(OPTIONS_TEXT, OPTIONS_RECT)
-
-        OPTIONS_BACK = Boton(image=pygame.image.load("assets\images\Jugar Rect.png"), pos=(ANCHO / 2, ALTO / 2 + 100), text_input="ATRAS", 
-                            font=pygame.font.Font(font_juego, 20), color_base="Black", color_mouse_arriba="Green")
-
-        OPTIONS_BACK.cambiar_color(pos_mouse)
-        OPTIONS_BACK.update(pantalla)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if OPTIONS_BACK.checkForInput(pos_mouse):
-                    menu_principal()
-
-        pygame.display.update()
-
-
 def menu_principal():
+    """El menu principal del juego"""
+
+    pygame.mixer.init()
+    pygame.mixer.music.load("sound\sonido_arcade.mp3")
+    pygame.mixer.music.play(-1)
+    pygame.mixer.music.set_volume(0.1)
+    sonido_activo = True
+
+    # Obtenemos el rect de las imagenes del sonido
+    rect_sonido = img_sonido.get_rect(topleft=(780, 20))
+    rect_sonido_mute = img_sonido_mute.get_rect(topleft=(780, 20))
+
     while True:
 
         pantalla.blit(img_fondo, (0, 0))
 
         pygame.display.set_caption("Menu")
-
+        # Obtenemos la posicion del mouse
         pos_mouse = pygame.mouse.get_pos()
 
-        TITULO_MENU = pygame.font.Font(font_juego, 70).render("PONG GAME", True, (255, 255, 0))
+        # Creanos el titulo del menu principal
+        TITULO_MENU = pygame.font.Font(font_juego, 70).render("PONG GAME", True, COLOR_AMARILLO)
         MENU_RECT = TITULO_MENU.get_rect(center=(ANCHO / 2, 60))
 
-        BOTON_JUGAR = Boton(image=pygame.image.load("assets\images\Jugar Rect.png"), pos=(ANCHO / 2, ALTO / 2 - 120), text_input="JUGAR",
-                            font=pygame.font.Font(font_juego, 20), color_base= (255, 255, 0), color_mouse_arriba=(255, 255, 255))
+        # Creamos los botones
+        BOTON_JUGAR = Boton(image=pygame.image.load("assets\images\img_fondo_boton.png"), pos=(ANCHO / 2, ALTO / 2 - 60), text_input="JUGAR",
+                            font=pygame.font.Font(font_juego, 30), color_base= COLOR_AMARILLO, color_mouse_arriba=COLOR_AZUL_OSCURO)
         
-        BOTON_PUNTAJE = Boton(image=pygame.image.load("assets\images\Jugar Rect.png"), pos=(ANCHO / 2, ALTO / 2), text_input="PUNTAJES",
-                            font=pygame.font.Font(font_juego, 20), color_base= (255, 255, 0), color_mouse_arriba=(255, 255, 255))
+        BOTON_SALIR = Boton(image=pygame.image.load("assets\images\img_fondo_boton.png"), pos=(ANCHO / 2, ALTO / 2 + 60), text_input="SALIR",
+                            font=pygame.font.Font(font_juego, 30), color_base= COLOR_AMARILLO, color_mouse_arriba=COLOR_AZUL_OSCURO)
         
-        BOTON_SALIR = Boton(image=pygame.image.load("assets\images\Jugar Rect.png"), pos=(ANCHO / 2, ALTO / 2 + 120), text_input="SALIR",
-                            font=pygame.font.Font(font_juego, 20), color_base= (255, 255, 0), color_mouse_arriba=(255, 255, 255))
-        
+        # Colocamos la imagen que corresponda segun si hay o no sonido 
+        if sonido_activo:
+            pantalla.blit(img_sonido, rect_sonido.topleft)
+        else:
+            pantalla.blit(img_sonido_mute, rect_sonido_mute.topleft)
+
         pantalla.blit(TITULO_MENU, MENU_RECT)
 
-        for boton in [BOTON_JUGAR, BOTON_PUNTAJE, BOTON_SALIR]:
+        # Recorremos los botones y cambiamos de color segun corresponda, despues los vuelve a dibujar en la superficie
+        for boton in [BOTON_JUGAR, BOTON_SALIR]:
             boton.cambiar_color(pos_mouse)
             boton.update(pantalla)
 
@@ -171,13 +198,19 @@ def menu_principal():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if BOTON_JUGAR.chequear_input(pos_mouse):
                     jugar()
-                if BOTON_PUNTAJE.chequear_input(pos_mouse):
-                    ultimas_partidas()
                 if BOTON_SALIR.chequear_input(pos_mouse):
                     pygame.quit()
                     sys.exit()
+                if rect_sonido.collidepoint(pos_mouse) or rect_sonido_mute.collidepoint(pos_mouse):
+                    if sonido_activo == True:
+                        pygame.mixer.music.set_volume(0)
+                        sonido_activo = False
+                    else:
+                        pygame.mixer.music.set_volume(0.2)
+                        sonido_activo = True
         
         pygame.display.update()
+
 
 menu_principal()
 

@@ -1,6 +1,7 @@
 import pygame
 
 def dibujar_red_punteada(pantalla, ancho, alto):
+    """Crea una red punteada en la mitad de la pantalla con rectangulos chicos"""
     x_centro = ancho // 2
     largo_segmento = 20
     espaciado = 15

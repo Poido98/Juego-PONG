@@ -1,14 +1,10 @@
 import pygame
 import random
 from paleta import Paleta
-
-ANCHO_PELOTA = 20
-ALTO_PELOTA = 20
-COLOR_PELOTA = (255, 0, 0)
+from constantes import *
 
 class Pelota:
-    def __init__(self, image_path, x_inicial, y_inicial, velocidad, ancho_pantalla, alto_pantalla):
-        # self.image = pygame.image.load(image_path) 
+    def __init__(self, x_inicial, y_inicial, velocidad, ancho_pantalla, alto_pantalla):
         self.x = x_inicial
         self.y = y_inicial
         self.velocidad = velocidad
@@ -21,8 +17,6 @@ class Pelota:
     def dibujar(self, surface):
         "Dibuja la pelota"
         pygame.draw.rect(surface, COLOR_PELOTA, self.rect)
-        # surface.blit(self.image, (self.x, self.y))
-        # pygame.draw.circle(surface, COLOR_PELOTA, (self.x, self.y), 30)
 
     def update(self):
         "Actualiza la posicion de la pelota"
@@ -31,12 +25,8 @@ class Pelota:
         self.rect.x = self.x
         self.rect.y = self.y
         self.rebotar_en_bordes()
-        
-        
-    # Capaz se puede hacer algo aca para que rebote directo cuando entre en contacto con la paleta 
 
-
-    # Rebote en techo y piso de pantalla (ver si conviene hacer aca o en el main como el de la nave)
+    # Rebote en techo y piso de pantalla
     def rebotar_en_bordes(self):
         """Detecta el rebote en el techo y en el piso"""
         if self.rect.top <= 0:
@@ -50,42 +40,7 @@ class Pelota:
     
     def rebotar_en_paleta(self, paleta):
         """Detecta el rebote en las paletas"""
-        # if self.rect.colliderect(paleta.rect):
-        #     self.dir_x *= -1
-        #     self.dir_y *= -1
-
-        #     # Detecta si rebota arriba y abajo de las paletas
-        #     if self.rect.bottom <= paleta.rect.top + 10: # Rebote hacia arriba
-        #         self.dir_y *= -1
-            
-        #     elif self.rect.top >= paleta.rect.bottom - 10: # Rebote hacia abajo
-        #         self.dir_y *= 1
-                
-        #     else:
-        #         self.dir_y *= -1
-                
-        #     paleta.x = paleta.rect.x
-        #     paleta.y = paleta.rect.y
-
-        # ---------------------------------------------------------------------------
-
-        # La unica forma de arreglar el rebote es con el rect.centery, que calcula dónde está el centro vertical de un objeto
-
-        # if self.rect.colliderect(paleta.rect):
-        #     self.dir_x *= -1  # Rebote horizontal
-
-        #     offset = self.rect.centery - paleta.rect.centery # Mide la distancia desde el centro de la pelota y el centro de la paleta
-
-        #     if offset < -30:
-        #         self.dir_y = -1 # Golpe en parte superior, rebota para arriba
-        #     elif offset > 30:
-        #         self.dir_y = 1 # Golpe en parte inferior, rebota para abajo
-        #     else:
-        #         pass # Mantiene la direccion vertical
-
-        # ----------------------------------------------------------------------------
-
-        # De esta forma cada vez que rebota arriba o abajo de la paleta, como que desplaza 
+        # De esta forma cada vez que rebota arriba o abajo de la paleta, desplaza 
         # la pelota un poco para afuera y sigue su recorrido
 
         if self.rect.colliderect(paleta.rect):
@@ -94,13 +49,13 @@ class Pelota:
 
             # Rebote vertical según zona de impacto
             if self.rect.bottom <= paleta.rect.top + 10:
-                self.dir_y = -1  # rebote hacia arriba
+                self.dir_y = -1  # Rebote hacia arriba
             elif self.rect.top >= paleta.rect.bottom - 10:
-                self.dir_y = 1   # rebote hacia abajo
+                self.dir_y = 1   # Rebote hacia abajo
             else:
-                self.dir_y *= -1  # rebote genérico
+                self.dir_y *= -1  # Rebote genérico
 
-            # Desplazamiento mínimo
+            # Desplazamiento mínimo para que no se trabe en la paleta la pelota
             if self.dir_x > 0:
                 self.rect.left = paleta.rect.right + 1
             else:
