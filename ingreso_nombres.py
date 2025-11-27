@@ -40,6 +40,7 @@ def pedir_nombres(pantalla, fuente):
             texto_render = fuente_input.render(nombre, True, COLOR_BLANCO)
             pantalla.blit(texto_render, (ANCHO//2 - 140, ALTO//2))
 
+            # Actualizamos la pantalla
             pygame.display.flip()
             clock.tick(60)
 

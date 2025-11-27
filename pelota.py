@@ -18,6 +18,7 @@ class Pelota:
         "Dibuja la pelota"
         pygame.draw.rect(surface, COLOR_PELOTA, self.rect)
 
+    # Llamamos a rebotar en bordes para verificar y actualizar si toco en los bordes de la pantalla
     def update(self):
         "Actualiza la posicion de la pelota"
         self.x += self.velocidad * self.dir_x
@@ -55,7 +56,7 @@ class Pelota:
             else:
                 self.dir_y *= -1  # Rebote genérico
 
-            # Desplazamiento mínimo para que no se trabe en la paleta la pelota
+            # Desplazamiento mínimo para que no se trabe la pelota en la paleta
             if self.dir_x > 0:
                 self.rect.left = paleta.rect.right + 1
             else:

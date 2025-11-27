@@ -137,9 +137,9 @@ def jugar():
             bola.velocidad = VEL_PELOTA
 
             # Puntaje maximo 
-            if puntaje_derecha >= 1:
+            if puntaje_derecha >= 10:
                 juego_terminado(pantalla, pygame.font.Font(font_juego, 22), nombre_derecha)
-            elif puntaje_izquierda >= 1:
+            elif puntaje_izquierda >= 10:
                 juego_terminado(pantalla, pygame.font.Font(font_juego, 22), nombre_izquierda)
 
         pygame.display.flip()
@@ -172,10 +172,10 @@ def menu_principal():
         MENU_RECT = TITULO_MENU.get_rect(center=(ANCHO / 2, 60))
 
         # Creamos los botones
-        BOTON_JUGAR = Boton(image=pygame.image.load("assets\images\img_fondo_boton.png"), pos=(ANCHO / 2, ALTO / 2 - 60), text_input="JUGAR",
+        BOTON_JUGAR = Boton(image=pygame.image.load("assets\images\img_fondo_boton.png"), pos=(ANCHO / 2, ALTO / 2 - 60), texto_input="JUGAR",
                             font=pygame.font.Font(font_juego, 30), color_base= COLOR_AMARILLO, color_mouse_arriba=COLOR_AZUL_OSCURO)
         
-        BOTON_SALIR = Boton(image=pygame.image.load("assets\images\img_fondo_boton.png"), pos=(ANCHO / 2, ALTO / 2 + 60), text_input="SALIR",
+        BOTON_SALIR = Boton(image=pygame.image.load("assets\images\img_fondo_boton.png"), pos=(ANCHO / 2, ALTO / 2 + 60), texto_input="SALIR",
                             font=pygame.font.Font(font_juego, 30), color_base= COLOR_AMARILLO, color_mouse_arriba=COLOR_AZUL_OSCURO)
         
         # Colocamos la imagen que corresponda segun si hay o no sonido 
